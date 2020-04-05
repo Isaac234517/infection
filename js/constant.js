@@ -1,0 +1,92 @@
+var endpoint ="https://lab.isaaclin.cn/nCoV/";
+var endpoint2 = "http://13.76.99.126/";
+var provinces = ["上海市", "云南省", "以色列", 
+"伊朗", "俄罗斯", "内蒙古自治区", "加拿大", 
+"北京市", "印度", "台湾", "吉林省", "四川省", 
+"埃及", "天津市", "宁夏回族自治区", "安徽省", "尼泊尔", "山东省", 
+"山西省", "广东省", "广西壮族自治区", "德国", "意大利", "斯里兰卡", "新加坡", 
+"新疆维吾尔自治区", "日本", "柬埔寨", "比利时", "江苏省", "江西省", "河北省", 
+"河南省", "法国", "泰国", "浙江省", "海南省", "湖北省", "湖南省", "澳大利亚", 
+"澳门", "瑞典", "甘肃省", "福建省", "美国", "芬兰", "英国", "菲律宾", "西班牙", 
+"西藏自治区", "贵州省", "越南", "辽宁省", "重庆市", "钻石公主号邮轮", "阿联酋", "陕西省", 
+"青海省", "韩国", "香港", "马来西亚", "黎巴嫩", "黑龙江省"];
+
+
+// const provincesDict = {
+//    "澳門":"澳门",
+//    "香港":"香港",
+//    "鑽石公主號郵輪":"钻石公主号邮轮",
+//    "廣東省":"广东省",
+//    "湖北省":"湖北省",
+//    "中國": "中国",
+//    "韓國":"韩国",
+//    "日本":"日本",
+//    "意大利":"意大利",
+//    "北京市":"北京市",
+//    "上海市": "上海市", 
+//    "雲南省": "云南省", 
+//    "以色列": "以色列", 
+//    "伊朗": "伊朗",
+//    "俄羅斯":"俄罗斯",
+//    "內蒙古自治區":"内蒙古自治区",
+//    "加拿大":"加拿大",
+//    "印度":"印度",
+//    "台灣":"台湾",
+//    "吉林省":"吉林省",
+//    "四川省":"四川省",
+//    "埃及":"埃及",
+//    "天津市":"天津市",
+//    "寧夏回族自治區":"宁夏回族自治区",
+//    "安徽省":"安徽省",
+//    "尼泊爾":"尼泊尔",
+//    "山東省":"山东省",
+//    "山西省":"山西省",
+//    "廣西壯族自治區":"广西壮族自治区",
+//    "德國":"德国",
+//    "斯里蘭卡":"斯里兰卡",
+//    "新加坡":"新加坡",
+//    "新疆維吾爾自治區":"新疆维吾尔自治区",
+//    "柬埔寨":"柬埔寨",
+//    "比利時":"比利时",
+//    "江蘇省":"江苏省",
+//    "江西省":"江西省",
+//    "河北省":"河北省",
+//    "河南省":"河南省",
+//    "法國":"法国",
+//    "泰國":"泰国",
+//    "浙江省":"浙江省",
+//    "海南省":"海南省",
+//    "湖南省":"湖南省",
+//    "澳大利亞":"澳大利亚",
+//    "瑞典":"瑞典",
+//    "甘肅省":"甘肃省",
+//    "福建省":"福建省",
+//    "美國":"美国",
+//    "芬蘭":"芬兰",
+//    "英國":"英国",
+//    "菲律賓":"菲律宾",
+//    "西班牙":"西班牙",
+//    "西藏自治區":"西藏自治区",
+//    "貴州省":"贵州省",
+//    "越南":"越南",
+//    "遼寧省":"辽宁省",
+//    "重慶市":"重庆市",
+//    "阿聯酋":"阿联酋",
+//    "陝西省":"陕西省",
+//    "青海省":"青海省",
+//    "馬來西亞":"马来西亚",
+//    "黎巴嫩":"黎巴嫩",
+//    "黑龍江省":"黑龙江省",
+//    "不丹":"不丹",
+//    "丹麥":"丹麦",
+// };
+
+
+const provincesDict = {"中國":"中国", "上海市": "上海市", "不丹": "不丹", "丹麥": "丹麦", "烏克蘭": "乌克兰", "烏拉圭": "乌拉圭", "雲南省": "云南省", "亞美尼亞": "亚美尼亚", "以色列": "以色列", "伊拉克": "伊拉克", "伊朗": "伊朗", "俄羅斯": "俄罗斯", "保加利亞": "保加利亚", "克羅地亞": "克罗地亚", "內蒙古自治區": "内蒙古自治区", "冰島": "冰岛", "幾內亞": "几内亚", "列支敦士登": "列支敦士登", "剛果（金）": "刚果（金）", "加拿大": "加拿大", "加納": "加纳", "加蓬": "加蓬", "匈牙利": "匈牙利", "北京市": "北京市", "北愛爾蘭": "北爱尔兰", "北馬其頓": "北马其顿", "南非": "南非", "卡塔爾": "卡塔尔", "盧旺達": "卢旺达", "盧森堡": "卢森堡", "印度": "印度", "印度尼西亞": "印度尼西亚", "危地馬拉": "危地马拉", "厄瓜多爾": "厄瓜多尔", "古巴": "古巴", "台灣": "台湾", "吉林省": "吉林省", "哈薩克斯坦": "哈萨克斯坦", "哥倫比亞": "哥伦比亚", "哥斯達黎加": "哥斯达黎加", "喀麥隆": "喀麦隆", "四川省": "四川省", "土耳其": "土耳其", "聖巴泰勒米": "圣巴泰勒米", "聖文森特和格林納丁斯": "圣文森特和格林纳丁斯", "聖馬丁島": "圣马丁岛", "聖馬力諾": "圣马力诺", "圭亞那": "圭亚那", "埃及": "埃及", "埃塞俄比亞": "埃塞俄比亚", "塞內加爾": "塞内加尔", "塞爾維亞": "塞尔维亚", "塞浦路斯": "塞浦路斯", "塞舌爾": "塞舌尔", "墨西哥": "墨西哥", "多哥": "多哥", "多米尼加": "多米尼加", "大不列顛及北愛爾蘭聯合王國": "大不列颠及北爱尔兰联合王国", "天津市": "天津市", "奧地利": "奥地利", "委內瑞拉": "委内瑞拉", "孟加拉國": "孟加拉国", "寧夏回族自治區": "宁夏回族自治区", "安徽省": "安徽省", "安提瓜和巴布達": "安提瓜和巴布达", "安道爾": "安道尔", "尼日利亞": "尼日利亚", "尼泊爾": "尼泊尔", "山東省": "山东省", "山西省": "山西省", "巴勒斯坦": "巴勒斯坦", "巴基斯坦": "巴基斯坦", "巴拉圭": "巴拉圭", "巴拿馬": "巴拿马", "巴林": "巴林", "巴西": "巴西", "布基納法索": "布基纳法索", "希臘": "希腊", "廣東省": "广东省", "廣西壯族自治區": "广西壮族自治区", "德國": "德国", "意大利": "意大利", "拉脫維亞": "拉脱维亚", "挪威": "挪威", "捷克": "捷克", "摩爾多瓦": "摩尔多瓦", "摩洛哥": "摩洛哥", "摩納哥": "摩纳哥", "文萊": "文莱", "斯威士蘭": "斯威士兰", "斯洛伐克": "斯洛伐克", "斯洛文尼亞": "斯洛文尼亚", "斯里蘭卡": "斯里兰卡", "新加坡": "新加坡", "新疆維吾爾自治區": "新疆维吾尔自治区", "新西蘭": "新西兰", "日本": "日本", "智利": "智利", "柬埔寨": "柬埔寨", "根西島": "根西岛", "格魯吉亞": "格鲁吉亚", "梵蒂岡": "梵蒂冈", "比利時": "比利时", "毛里塔尼亞": "毛里塔尼亚", "江蘇省": "江苏省", "江西省": "江西省", "沙特阿拉伯": "沙特阿拉伯", "河北省": "河北省", "河南省": "河南省", "法國": "法国", "法屬圭亞那": "法属圭亚那", "法屬波利尼西亞": "法属波利尼西亚", "法羅群島": "法罗群岛", "波蘭": "波兰", "波黑": "波黑", "泰國": "泰国", "澤西島": "泽西岛", "洪都拉斯": "洪都拉斯", "浙江省": "浙江省", "海南省": "海南省", "湖北省": "湖北省", "湖南省": "湖南省", "澳大利亞": "澳大利亚", "澳門": "澳门", "愛爾蘭": "爱尔兰", "愛沙尼亞": "爱沙尼亚", "牙買加": "牙买加", "特立尼達和多巴哥": "特立尼达和多巴哥", "玻利維亞": "玻利维亚", "瑞典": "瑞典", "瑞士": "瑞士", "甘肅省": "甘肃省", "留尼汪": "留尼汪", "白俄羅斯": "白俄罗斯", "直布羅陀": "直布罗陀", "福建省": "福建省", "科威特": "科威特", "科特瓦": "科特迪瓦", "秘魯": "秘鲁", "突尼斯": "突尼斯", "立陶宛": "立陶宛", "約旦": "约旦", "納米比亞": "纳米比亚", "羅馬尼亞": "罗马尼亚", "美國": "美国", "肯尼亞": "肯尼亚", "至尊公主郵輪": "至尊公主邮轮", "芬蘭": "芬兰", "蘇丹": "苏丹", "蘇里南": "苏里南", "英國": "英国", "英國（含北愛爾蘭）": "英国（含北爱尔兰）", "荷蘭": "荷兰", "菲律賓": "菲律宾", "葡萄牙": "葡萄牙", "蒙古": "蒙古", "西班牙": "西班牙", "西藏自治區": "西藏自治区", "貴州省": "贵州省", "赤道幾內亞": "赤道几内亚", "越南": "越南", "遼寧省": "辽宁省", "重慶市": "重庆市", "鑽石公主號郵輪": "钻石公主号邮轮", "阿塞拜疆": "阿塞拜疆", "阿富汗": "阿富汗", "阿爾及利亞": "阿尔及利亚", "阿爾巴尼亞": "阿尔巴尼亚", "阿曼": "阿曼", "阿根廷": "阿根廷", "阿聯酋": "阿联酋", "陝西省": "陕西省", "青海省": "青海省", "韓國": "韩国", "香港": "香港", "馬爾代夫": "马尔代夫", "馬提尼克": "马提尼克", "馬來西亞": "马来西亚", "馬耳他": "马耳他", "黎巴嫩": "黎巴嫩", "黑龍江省": "黑龙江省"}
+
+
+const cn_eng = {"中国":"China","上海市": "Shanghai", "不丹": "Bhutan", "丹麦": "Denmark", "乌克兰": "Ukraine", "乌拉圭": "Uruguay", "云南省": "Yunnan Province", "亚美尼亚": "Armenia", "以色列": "Israel", "伊拉克": "Iraq", "伊朗": "Iran", "俄罗斯": "Russia", "保加利亚": "Bulgaria ", "克罗地亚": " Croatia ", "内蒙古自治区": " Inner Mongolia Autonomous Region ", "冰岛": " Iceland ", "几内亚": " Guinea ", "列支敦士登": " Liechtenstein ", "刚果（金）": " Congo (D) ", "加拿大": " Canada ", "加纳": " Ghana ", "加蓬": " Gabon ", "匈牙利": " Hungary ", "北京市": " Beijing ", "北爱尔兰": "Northern Ireland", "北马其顿": "Northern Macedonia", "南非": "South Africa", "卡塔尔": "Qatar", "卢旺达": "Rwanda", "卢森堡": "Luxembourg", "印度": "India", "印度尼西亚": "Indonesia", "危地马拉": "Guatemala", "厄瓜多尔": "Ecuador", "古巴": "Cuba", "台湾": "Taiwan", "吉林省": "Jilin Province", "哈萨克斯坦": "Kazakhstan", "哥伦比亚": "Colombia", "哥斯达黎加": "Costa Rica", "喀麦隆": "Cameroon", "四川省": "Sichuan Province", "土耳其": "Turkey", "圣巴泰勒米": "St. Barthelemy", "圣文森特和格林纳丁斯": "St. Vincent and the Grenadines", "圣马丁岛": "St. Martin ", "圣马力诺": " San Marino ", "圭亚那": " Guyana ", "埃及": " Egypt ", "埃塞俄比亚": " Ethiopia ", "塞内加尔": " Senegal ", "塞尔维亚": " Serbia ", "塞浦路斯": " Cyprus ", "塞舌尔": " Seychelles ", "墨西哥": " Mexico ", "多哥": " Togo ", "多米尼加": " Dominica ", "大不列颠及北爱尔兰联合王国": "United Kingdom of Great Britain and Northern Ireland", "天津市": "Tianjin", "奥地利": "Austria", "委内瑞拉": "Venezuela", "孟加拉国": "Bangladesh", "宁夏回族自治区": "Ningxia Hui Autonomous Region", "安徽省": "Anhui Province", "安提瓜和巴布达": "Antigua and Barbuda", "安道尔": " Andorra ", "尼日利亚": " Nigeria ", "尼泊尔": " Nepal ", "山东省": " Shandong Province ", "山西省": " Shanxi Province ", "巴勒斯坦": " Palestine ", "巴基斯坦": " Pakistan ", "巴拉圭": " Paraguay ", "巴拿马": " Panama ", "巴林": " Bahrain ", "巴西": " Brazil ", "布基纳法索": " Burkina Faso ", "希腊": " Greece ", "广东省": " Guangdong Province ", "广西壮族自治区": " Guangxi Zhuang Autonomous Region ", "德国": " Germany ", "意大利": " Italy ", "拉脱维亚": " Latvia ", "挪威": " Norway ", "捷克": " Czech ", "摩尔多瓦": " Moldova ", "摩洛哥": " Morocco ", "摩纳哥": " Monaco ", "文莱": " Brunei ", "斯威士兰": "Swaziland", "斯洛伐克": "Slovakia", "斯洛文尼亚": "Slovenia", "斯里兰卡": "Sri Lanka", "新加坡": "Singapore", "新疆维吾尔自治区": "Xinjiang Uygur Autonomous Region", "新西兰": "New Zealand", "日本": "Japan", "智利": "Chile", "柬埔寨": "Cambodia", "根西岛": "Guernsey", "格鲁吉亚": "Georgia", "梵蒂冈": "Vatican", "比利时": "Belgium", "毛里塔尼亚": "Mauritania", "江苏省": "Jiangsu Province", "江西省": "Jiangxi Province", "沙特阿拉伯": "Saudi Arabia", "河北省": "Hebei Province", "河南省": "Henan Province", "法国": "France", "法属圭亚那": "French Guiana", "法属波利尼西亚": "French Polynesia", "法罗群岛": "Faroe Islands", "波兰": "Poland", "波黑": "Bosnia and Herzegovina", "泰国": "Thailand", "泽西岛": "Jersey", "洪都拉斯": "Honduras", "浙江省": "Zhejiang Province", "海南省": "Hainan Province", "湖北省": "Hubei Province", "湖南省": "Hunan Province", "澳大利亚": "Australia", "澳门": "Macau", "爱尔兰": "Ireland", "爱沙尼亚": "Estonia", "牙买加": "Jamaica", "特立尼达和多巴哥": "Trinidad and Tobago", "玻利维亚": "Bolivia", "瑞典": "Sweden", "瑞士": "Switzerland", "甘肃省": "Gansu Province ", "留尼汪": " Reunion ", "白俄罗斯": " Belarus ", "直布罗陀": " Gibraltar ", "福建省": " Fujian Province ", "科威特": " Kuwait ", "科特迪瓦": " Korea Watt", "秘鲁": "Peru", "突尼斯": "Tunisia", "立陶宛": "Lithuania", "约旦": "Jordan", "纳米比亚": "Namibia", "罗马尼亚": "Romania", "美国": "United States", "肯尼亚": "Kenya", "至尊公主邮轮": "Extreme Princess Cruises", "芬兰": "Finland", "苏丹": "Sudan", "苏里南": "Suriname ", "英国": " United Kingdom ", "英国（含北爱尔兰）": " United Kingdom (including Northern Ireland) ", "荷兰": " Netherlands ", "菲律宾": " Philippines ", "葡萄牙": " Portugal ", "蒙古": " Mongolia ", "西班牙": " Spain ", "西藏自治区": " Tibet Autonomous Region ", "贵州省": " Guizhou Province ", "赤道几内亚": " Equatorial Guinea ", "越南": "Vietnam", "辽宁省": "Liaoning Province", "重庆市": "Chongqing", "钻石公主号邮轮": "Diamond Princess Cruise", "阿塞拜疆": "Azerbaijan", "阿富汗": "Afghanistan", "阿尔及利亚": "Algeria", "阿尔巴尼亚": "Albania", "阿曼": "Oman", "阿根廷": "Argentina", "阿联酋": "UAE", "陕西省": "Shaanxi Province", "青海省": "Qinghai Province", "韩国": "Korea", "香港": "Hong Kong", "马尔代夫": "Maldives", "马提尼克": "Martinique", "马来西亚": "Malaysia", "马耳他": "Malta", "黎巴嫩": "Lebanon", "黑龙江省": "Heilongjiang Province"}
+
+const cn_mo = {"中国":"中國", "上海市": "上海市", "不丹": "不丹", "丹麦": "丹麥", "乌克兰": "烏克蘭", "乌拉圭": "烏拉圭", "云南省": "雲南省", "亚美尼亚": "亞美尼亞", "以色列": "以色列", "伊拉克": "伊拉克", "伊朗": "伊朗", "俄罗斯": "俄羅斯", "保加利亚": "保加利亞", "克罗地亚": "克羅地亞", "内蒙古自治区": "內蒙古自治區", "冰岛": "冰島", "几内亚": "幾內亞", "列支敦士登": "列支敦士登", "刚果（金）": "剛果（金）", "加拿大": "加拿大", "加纳": "加納", "加蓬": "加蓬", "匈牙利": "匈牙利", "北京市": "北京市", "北爱尔兰": "北愛爾蘭", "北马其顿": "北馬其頓", "南非": "南非", "卡塔尔": "卡塔爾", "卢旺达": "盧旺達", "卢森堡": "盧森堡", "印度": "印度", "印度尼西亚": "印度尼西亞", "危地马拉": "危地馬拉", "厄瓜多尔": "厄瓜多爾", "古巴": "古巴", "台湾": "台灣", "吉林省": "吉林省", "哈萨克斯坦": "哈薩克斯坦", "哥伦比亚": "哥倫比亞", "哥斯达黎加": "哥斯達黎加", "喀麦隆": "喀麥隆", "四川省": "四川省", "土耳其": "土耳其", "圣巴泰勒米": "聖巴泰勒米", "圣文森特和格林纳丁斯": "聖文森特和格林納丁斯", "圣马丁岛": "聖馬丁島", "圣马力诺": "聖馬力諾", "圭亚那": "圭亞那", "埃及": "埃及", "埃塞俄比亚": "埃塞俄比亞", "塞内加尔": "塞內加爾", "塞尔维亚": "塞爾維亞", "塞浦路斯": "塞浦路斯", "塞舌尔": "塞舌爾", "墨西哥": "墨西哥", "多哥": "多哥", "多米尼加": "多米尼加", "大不列颠及北爱尔兰联合王国": "大不列顛及北愛爾蘭聯合王國", "天津市": "天津市", "奥地利": "奧地利", "委内瑞拉": "委內瑞拉", "孟加拉国": "孟加拉國", "宁夏回族自治区": "寧夏回族自治區", "安徽省": "安徽省", "安提瓜和巴布达": "安提瓜和巴布達", "安道尔": "安道爾", "尼日利亚": "尼日利亞", "尼泊尔": "尼泊爾", "山东省": "山東省", "山西省": "山西省", "巴勒斯坦": "巴勒斯坦", "巴基斯坦": "巴基斯坦", "巴拉圭": "巴拉圭", "巴拿马": "巴拿馬", "巴林": "巴林", "巴西": "巴西", "布基纳法索": "布基納法索", "希腊": "希臘", "广东省": "廣東省", "广西壮族自治区": "廣西壯族自治區", "德国": "德國", "意大利": "意大利", "拉脱维亚": "拉脫維亞", "挪威": "挪威", "捷克": "捷克", "摩尔多瓦": "摩爾多瓦", "摩洛哥": "摩洛哥", "摩纳哥": "摩納哥", "文莱": "文萊", "斯威士兰": "斯威士蘭", "斯洛伐克": "斯洛伐克", "斯洛文尼亚": "斯洛文尼亞", "斯里兰卡": "斯里蘭卡", "新加坡": "新加坡", "新疆维吾尔自治区": "新疆維吾爾自治區", "新西兰": "新西蘭", "日本": "日本", "智利": "智利", "柬埔寨": "柬埔寨", "根西岛": "根西島", "格鲁吉亚": "格魯吉亞", "梵蒂冈": "梵蒂岡", "比利时": "比利時", "毛里塔尼亚": "毛里塔尼亞", "江苏省": "江蘇省", "江西省": "江西省", "沙特阿拉伯": "沙特阿拉伯", "河北省": "河北省", "河南省": "河南省", "法国": "法國", "法属圭亚那": "法屬圭亞那", "法属波利尼西亚": "法屬波利尼西亞", "法罗群岛": "法羅群島", "波兰": "波蘭", "波黑": "波黑", "泰国": "泰國", "泽西岛": "澤西島", "洪都拉斯": "洪都拉斯", "浙江省": "浙江省", "海南省": "海南省", "湖北省": "湖北省", "湖南省": "湖南省", "澳大利亚": "澳大利亞", "澳门": "澳門", "爱尔兰": "愛爾蘭", "爱沙尼亚": "愛沙尼亞", "牙买加": "牙買加", "特立尼达和多巴哥": "特立尼達和多巴哥", "玻利维亚": "玻利維亞", "瑞典": "瑞典", "瑞士": "瑞士", "甘肃省": "甘肅省", "留尼汪": "留尼汪", "白俄罗斯": "白俄羅斯", "直布罗陀": "直布羅陀", "福建省": "福建省", "科威特": "科威特", "科特迪瓦": "科特瓦", "秘鲁": "秘魯", "突尼斯": "突尼斯", "立陶宛": "立陶宛", "约旦": "約旦", "纳米比亚": "納米比亞", "罗马尼亚": "羅馬尼亞", "美国": "美國", "肯尼亚": "肯尼亞", "至尊公主邮轮": "至尊公主郵輪", "芬兰": "芬蘭", "苏丹": "蘇丹", "苏里南": "蘇里南", "英国": "英國", "英国（含北爱尔兰）": "英國（含北愛爾蘭）", "荷兰": "荷蘭", "菲律宾": "菲律賓", "葡萄牙": "葡萄牙", "蒙古": "蒙古", "西班牙": "西班牙", "西藏自治区": "西藏自治區", "贵州省": "貴州省", "赤道几内亚": "赤道幾內亞", "越南": "越南", "辽宁省": "遼寧省", "重庆市": "重慶市", "钻石公主号邮轮": "鑽石公主號郵輪", "阿塞拜疆": "阿塞拜疆", "阿富汗": "阿富汗", "阿尔及利亚": "阿爾及利亞", "阿尔巴尼亚": "阿爾巴尼亞", "阿曼": "阿曼", "阿根廷": "阿根廷", "阿联酋": "阿聯酋", "陕西省": "陝西省", "青海省": "青海省", "韩国": "韓國", "香港": "香港", "马尔代夫": "馬爾代夫", "马提尼克": "馬提尼克", "马来西亚": "馬來西亞", "马耳他": "馬耳他", "黎巴嫩": "黎巴嫩", "黑龙江省": "黑龍江省"}
+
+const en_code = {"Portugal": "PT", "Pakistan": "PK", "Chad": "TD", "Monaco": "MC", "Kuwait": "KW", "Kenya": "KE", "Haiti": "HT", "Kiribati": "KI", "Puerto Rico": "PR", "Anguilla": "AI", "Bahamas": "BS", "Japan": "JP", "Montserrat": "MS", "Guatemala": "GT", "Jordan": "JO", "Cape Verde": "CV", "East Timor": "TL", "New Caledonia": "NC", "Pitcairn": "PN", "Tonga": "TO", "Slovenia": "SI", "Palau": "PW", "Palestinian Territory": "PS", "Nigeria": "NG", "Cocos Islands": "CC", "Macedonia": "MK", "Solomon Islands": "SB", "Oman": "OM", "Syria": "SY", "Western Sahara": "EH", "Micronesia": "FM", "Taiwan": "TW", "Saint Martin": "MF", "Poland": "PL", "British Indian Ocean Territory": "IO", "Iceland": "IS", "British Virgin Islands": "VG", "Bolivia": "BO", "Myanmar": "MM", "Brazil": "BR", "North Korea": "KP", "Canada": "CA", "Senegal": "SN", "Lesotho": "LS", "Vatican": "VA", "Cyprus": "CY", "Norfolk Island": "NF", "Papua New Guinea": "PG", "Ghana": "GH", "Aruba": "AW", "Nepal": "NP", "Bhutan": "BT", "Jamaica": "JM", "Uganda": "UG", "Gambia": "GM", "China": "CN", "Democratic Republic of the Congo": "CD", "India": "IN", "United States Minor Outlying Islands": "UM", "Samoa": "WS", "Vietnam": "VN", "Guernsey": "GG", "Mozambique": "MZ", "Djibouti": "DJ", "Comoros": "KM", "Romania": "RO", "Heard Island and McDonald Islands": "HM", "South Sudan": "SS", "Angola": "AO", "Italy": "IT", "Somalia": "SO", "Tokelau": "TK", "Sierra Leone": "SL", "Latvia": "LV", "United States": "US", "Kazakhstan": "KZ", "Swaziland": "SZ", "Hong Kong": "HK", "Mexico": "MX", "Kyrgyzstan": "KG", "Peru": "PE", "Russia": "RU", "Rwanda": "RW", "Equatorial Guinea": "GQ", "Nauru": "NR", "Trinidad and Tobago": "TT", "Bulgaria": "BG", "Tajikistan": "TJ", "Turkey": "TR", "Guam": "GU", "Ivory Coast": "CI", "Thailand": "TH", "Liechtenstein": "LI", "Christmas Island": "CX", "Qatar": "QA", "Sudan": "SD", "Benin": "BJ", "Singapore": "SG", "Venezuela": "VE", "Sweden": "SE", "Guyana": "GY", "Faroe Islands": "FO", "Netherlands": "NL", "Namibia": "NA", "Wallis and Futuna": "WF", "Albania": "AL", "Ecuador": "EC", "Ireland": "IE", "Lebanon": "LB", "Tunisia": "TN", "Jersey": "JE", "Fiji": "FJ", "Germany": "DE", "Eritrea": "ER", "Belgium": "BE", "Martinique": "MQ", "Burundi": "BI", "Czech Republic": "CZ", "Isle of Man": "IM", "Botswana": "BW", "Zambia": "ZM", "Libya": "LY", "Lithuania": "LT", "Austria": "AT", "French Polynesia": "PF", "Saint Lucia": "LC", "French Guiana": "GF", "Morocco": "MA", "Aland Islands": "AX", "Uruguay": "UY", "Dominican Republic": "DO", "Togo": "TG", "Reunion": "RE", "Uzbekistan": "UZ", "Greenland": "GL", "San Marino": "SM", "Tanzania": "TZ", "Antigua and Barbuda": "AG", "Madagascar": "MG", "France": "FR", "Curacao": "CW", "American Samoa": "AS", "Argentina": "AR", "Moldova": "MD", "Grenada": "GD", "Cameroon": "CM", "Sint Maarten": "SX", "Malawi": "MW", "Svalbard and Jan Mayen": "SJ", "Gibraltar": "GI", "Saint Pierre and Miquelon": "PM", "Kosovo": "XK", "Tuvalu": "TV", "Belarus": "BY", "Serbia": "RS", "Vanuatu": "VU", "Philippines": "PH", "Bahrain": "BH", "Saudi Arabia": "SA", "South Korea": "KR", "Ethiopia": "ET", "Marshall Islands": "MH", "Liberia": "LR", "Bangladesh": "BD", "Barbados": "BB", "Macao": "MO", "Malta": "MT", "Guinea": "GN", "Egypt": "EG", "French Southern Territories": "TF", "Cayman Islands": "KY", "Costa Rica": "CR", "Northern Mariana Islands": "MP", "Australia": "AU", "Sri Lanka": "LK", "El Salvador": "SV", "Cook Islands": "CK", "Mayotte": "YT", "Andorra": "AD", "South Georgia and the South Sandwich Islands": "GS", "Central African Republic": "CF", "Saint Vincent and the Grenadines": "VC", "Hungary": "HU", "U.S. Virgin Islands": "VI", "Colombia": "CO", "Belize": "BZ", "Slovakia": "SK", "Suriname": "SR", "Iran": "IR", "Estonia": "EE", "Saint Kitts and Nevis": "KN", "Maldives": "MV", "Honduras": "HN", "Mongolia": "MN", "Finland": "FI", "Guadeloupe": "GP", "Falkland Islands": "FK", "Niger": "NE", "Antarctica": "AQ", "Georgia": "GE", "Dominica": "DM", "Cuba": "CU", "United Kingdom": "GB", "Malaysia": "MY", "Seychelles": "SC", "Ukraine": "UA", "Bouvet Island": "BV", "Republic of the Congo": "CG", "Mauritania": "MR", "Laos": "LA", "Panama": "PA", "Indonesia": "ID", "United Arab Emirates": "AE", "South Africa": "ZA", "Brunei": "BN", "Bosnia and Herzegovina": "BA", "Bonaire, Saint Eustatius and Saba ": "BQ", "Sao Tome and Principe": "ST", "Algeria": "DZ", "Norway": "NO", "Greece": "GR", "Chile": "CL", "Afghanistan": "AF", "Switzerland": "CH", "Paraguay": "PY", "Israel": "IL", "Gabon": "GA", "Burkina Faso": "BF", "Montenegro": "ME", "Luxembourg": "LU", "Spain": "ES", "Azerbaijan": "AZ", "Nicaragua": "NI", "Niue": "NU", "Zimbabwe": "ZW", "Saint Barthelemy": "BL", "Cambodia": "KH", "Denmark": "DK", "Armenia": "AM", "Yemen": "YE", "New Zealand": "NZ", "Turks and Caicos Islands": "TC", "Turkmenistan": "TM", "Iraq": "IQ", "Guinea-Bissau": "GW", "Mali": "ML", "Saint Helena": "SH", "Mauritius": "MU", "Croatia": "HR", "Bermuda": "BM"}

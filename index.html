@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="./css/chosen.min.css"/>
+  <link rel="stylesheet" type="text/css" href="./css/main.css"/>
+  <style>
+    .backdrop{
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1050;
+      overflow: hidden;
+      outline: 0;
+    }
+
+    .lds-ring {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-ring div {
+      box-sizing: border-box;
+      display: block;
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      margin: 8px;
+      border: 8px solid red;
+      border-radius: 50%;
+      animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      border-color: red transparent transparent transparent;
+    }
+
+    .lds-ring div:nth-child(1) {
+      animation-delay: -0.45s;
+    }
+
+    .lds-ring div:nth-child(2) {
+      animation-delay: -0.3s;
+    }
+
+    .lds-ring div:nth-child(3) {
+      animation-delay: -0.15s;
+    }
+
+    @keyframes lds-ring {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  <script src="./js/jquery-3.4.1.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+  <script src="./js/chosen.jquery.min.js"></script>
+  <script src="./js/echarts.min.js"></script>
+  <script src="./js/constant.js"></script>
+  <script>
+    function initProvinces(){
+      var select = "<select id='area-option' data-placeholder='選取地區' class='form-control'>";
+        Object.keys(provincesDict).forEach((province, idx) => {
+          if(province === "澳門"){
+            select += "<option value='" + provincesDict[province] + "' selected='selected'>" + province
+              + "</option>";
+          }
+          else{
+            select += "<option value='" +  provincesDict[province] + "'>" + province
+              + "</option>";
+          }
+        });
+      $("#search-area").append(select);
+    }
+
+    function fetchedDataTable(province){
+      let url = province !== null? endpoint + 'api/area?latest=1&province=' + province:
+          endpoint + 'api/overall?latest=1';
+      $.ajax({
+          url,
+          method:'get',
+          success: function(result){
+            if(result.success === true){
+              var dataResult = result.results;
+              var data = dataResult[0];
+              var html = "";
+              let { provinceName, confirmedCount, suspectedCount, curedCount, deadCount } = data;
+              $("#misc-data").empty(); 
+              $("#province-detail-table-body").empty();
+              $("#misc-data-area > h5").html("<h5 class='text-success'>"+ getDictKeyByValue(provincesDict,provinceName) +"疫情情況"+"</h5>");
+              html +="<span class='badge badge-primary mr-2'>確診:" + confirmedCount +"</span>";
+              html +="<span class='badge badge-warning mr-2'>疑似:" + suspectedCount +"</span>"; 
+              html +="<span class='badge badge-success mr-2'>康復:" + curedCount +"</span>";
+              html +="<span class='badge badge-danger mr-2'>死亡:" + deadCount +"</span>"; 
+              $("#misc-data").append(html);
+              let cities = data.cities;
+              console.log(cities);
+              if(cities !== null && cities !== undefined && cities.length > 0){
+                cities.forEach((city, idx) => {
+                  if(city !==null){
+                      let { cityName, confirmedCount, suspectedCount, curedCount, deadCount } = city;
+                      let cityNameTD =`<td>${cityName}</td>`;
+                      let confirmedCountTD =`<td>${confirmedCount}</td>`
+                      let suspectedCountTD =`<td>${suspectedCount}</td>`
+                      let curedCountTD =`<td>${curedCount}</td>`
+                      let deadCountTD =`<td>${deadCount}</td>`
+                      let tr = "<tr>" + cityNameTD + confirmedCountTD + suspectedCountTD + curedCountTD + deadCountTD + "</tr>";
+                      $("#province-detail-table-body").append(tr);
+                  }
+                });
+              }
+              else{
+                let tr="<tr><td class='text-center' colspan='5'>沒有資料</td></tr>";
+                $("#province-detail-table-body").append(tr);
+              }
+            }
+          }
+      });
+    }
+
+    function fetchChartData(province){
+      let url = province !== null? endpoint2 + 'api/area?latest=0&province=' + province :
+          endpoint2 + 'api/overall?latest=0';
+      $.ajax({
+        url: url,
+        method: 'get',
+        success: function(result){
+          //if(result.success === true){
+            console.log(result);
+            let dataResult = result;
+            let trendData = [];
+            let incrementalData = [];
+            let confirmation = [];
+            let incrementalConfirmation = [];
+            let dataList = [];
+            for(var i in dataResult){
+              let datetime = new Date(dataResult[i].updateTime);
+              let displayDate =  [datetime.getFullYear(), datetime.getMonth() + 1, ("0" + datetime.getDate()).slice(-2)].join('/');
+              if(trendData.includes(displayDate) === true){
+                  continue;
+              }
+
+              if(!dataList[displayDate] || dataList[displayDate] < dataResult[i].confirmedCount){
+                dataList[displayDate] = dataResult[i].confirmedCount;
+              }
+            }
+            const dataListOrdered = {};
+            Object.keys(dataList).sort((function (a, b) {
+                a = a.split('/').join('');
+                b = b.split('/').join('');
+                return a > b ? 1 : a < b ? -1 : 0;
+            })).forEach(function (key) {
+                dataListOrdered[key] = dataList[key];
+            });
+
+              // use data
+            for (var i in dataListOrdered) {
+              trendData.push(i);
+              confirmation.push(dataListOrdered[i]);
+
+              var t = new Date(i);
+              t.setDate(t.getDate() - 1);
+              var yesterday = [t.getFullYear(), t.getMonth() + 1, ("0" + t.getDate()).slice(-2)].join('/');
+              if (!dataListOrdered[yesterday]) {
+                continue;
+              }
+
+              incrementalData.push(i);
+              if(dataListOrdered[i] - dataListOrdered[yesterday]> 0 )
+                incrementalConfirmation.push(dataListOrdered[i] - dataListOrdered[yesterday]);
+              else
+                incrementalConfirmation.push(0);
+            }
+            
+            let title = '';
+            if(dataResult[0].countryName !== dataResult[0].provinceName)
+              title = "總確診人數(" + getDictKeyByValue(provincesDict,dataResult[0].countryName )+ "-" + getDictKeyByValue(provincesDict,dataResult[0].provinceName) + ")";
+            else if(dataResult[0].countryName === undefined)
+              title = "總確診人數(中國)";
+            else
+              title = "總確診人數(" + getDictKeyByValue(provincesDict,dataResult[0].countryName ) +")";
+            initTrendChart(trendData, confirmation, title);
+            if(dataResult[0].countryName !== dataResult[0].provinceName)
+              title = "每天增量(" + getDictKeyByValue(provincesDict,dataResult[0].countryName )+ "-" + getDictKeyByValue(provincesDict,dataResult[0].provinceName) + ")";
+            else if (dataResult[0].countryName === undefined)
+              title = "每天增量(中國)";
+            else
+              title = "每天增量(" + getDictKeyByValue(provincesDict,dataResult[0].countryName ) +")";
+            initIncrementialChart(incrementalData, incrementalConfirmation, title);
+            $("#loading").fadeOut();
+            return;
+          //}
+        }
+      });
+    }
+
+    function initTrendChart(trendDate, confirm, title){
+        var orderTraceContainer = echarts.init(document.getElementById('day-trend-chart'));
+            orderTraceContainer.showLoading({
+                text: '載入中...',
+                effect: 'whirling'
+            });
+        echartsOption = {
+                backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                    offset: 0,
+                    color: '#a64dff'
+                },
+                    {
+                        offset: 1,
+                        color: '#3333ff'
+                    }
+                ], false),
+                title: {
+                    text: title,
+                    left: "center",
+                    bottom: "2%",
+                    textStyle: {
+                        color: "#fff",
+                        fontSize: 16
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                grid: {
+                    top: '20%',
+                    left: '5%',
+                    right: '1%',
+                    bottom: '15%',
+                    containLabel: true,
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: trendDate,
+                    axisLabel: {
+                        margin: 20,
+                        color: '#F7F9F9'
+                    },
+                    axisLine: {
+                      lineStyle: {
+                            color: '#fff2e6',
+                            width: 1.5
+                        }
+                    },
+                    axisTick: {
+                        show: true,
+                        length: 25,
+                        lineStyle: {
+                            color: "#ffffff1f"
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#ffffff1f'
+                        }
+                    }
+                },
+                yAxis: [{
+                    type: 'value',
+                    position: 'right',
+                    offset:0,
+                    slient:true,
+                    axisLabel: {
+                        margin: 20,
+                        color: '#fff2e6'
+                    },
+
+                    axisTick: {
+                        show: true,
+                        length: 15,
+                        lineStyle: {
+                            color: "#ffffff1f",
+                        }
+                    },
+                    splitLine: {
+                        show: false,
+                        lineStyle: {
+                            color: '#ffffff1f'
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#fff2e6',
+                            width: 2
+                        }
+                    }
+                }],
+                series: [
+                    {
+                        name: '總數量',
+                        type: 'line',
+                        smooth: true,
+                        showAllSymbol: false,
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        lineStyle: {
+                            normal: {
+                                color: "#82E0AA",
+                            },
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            textStyle: {
+                                color: '#82E0AA',
+                            }
+                        },
+                        itemStyle: {
+                            color: "#2874A6",
+                            borderColor: "#fff",
+                            borderWidth: 3
+                        },
+                        tooltip: {
+                            show: true
+                        },
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: '#eb64fb'
+                                },
+                                    {
+                                        offset: 1,
+                                        color: '#3fbbff0d'
+                                    }
+                                ], false),
+                            }
+                        },
+                        data: confirm
+                    }
+                  ]
+                };
+        orderTraceContainer.hideLoading();
+        orderTraceContainer.setOption(echartsOption);
+      }
+
+    function initIncrementialChart(incrementalDate, incrementalConfirmation, title) {
+      var orderTraceContainer = echarts.init(document.getElementById('incremental-chart'));
+            orderTraceContainer.showLoading({
+                text: '載入中...',
+                effect: 'whirling'
+            });
+
+
+            echartsOption = {
+                backgroundColor: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                    offset: 0,
+                    color: '#a64dff'
+                },
+                    {
+                        offset: 1,
+                        color: '#3333ff'
+                    }
+                ], false),
+                title: {
+                    text: title,
+                    left: "center",
+                    bottom: "2%",
+                    textStyle: {
+                        color: "#fff",
+                        fontSize: 16
+                    }
+                },
+                grid: {
+                    top: '20%',
+                    left: '5%',
+                    right: '1%',
+                    bottom: '15%',
+                    containLabel: true,
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: incrementalDate,
+                    axisLabel: {
+                        margin: 30,
+                        color: '#F7F9F9'
+                    },
+                    axisLine: {
+                      lineStyle: {
+                            color: '#fff2e6',
+                            width: 1.5
+                        }
+                    },
+                    axisTick: {
+                        show: true,
+                        length: 25,
+                        lineStyle: {
+                            color: "#ffffff1f"
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#ffffff1f'
+                        }
+                    }
+                },
+                yAxis: [{
+                    type: 'value',
+                    position: 'right',
+                    axisLabel: {
+                        margin: 20,
+                        color: '#ffffff63'
+                    },
+
+                    axisTick: {
+                        show: true,
+                        length: 15,
+                        lineStyle: {
+                            color: "#ffffff1f",
+                        }
+                    },
+                    splitLine: {
+                        show: true,
+                        lineStyle: {
+                            color: '#ffffff1f'
+                        }
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#fff',
+                            width: 2
+                        }
+                    }
+                }],
+                series: [
+                    {
+                        name: '總數量',
+                        type: 'line',
+                        smooth: true, 
+                        showAllSymbol: true,
+                        symbol: 'circle',
+                        symbolSize: 6,
+                        lineStyle: {
+                            normal: {
+                                color: "#82E0AA",
+                            },
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            textStyle: {
+                                color: '#82E0AA',
+                            }
+                        },
+                        itemStyle: {
+                            color: "#2874A6",
+                            borderColor: "#fff",
+                            borderWidth: 3
+                        },
+                        tooltip: {
+                            show: true
+                        },
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: '#eb64fb'
+                                },
+                                    {
+                                        offset: 1,
+                                        color: '#3fbbff0d'
+                                    }
+                                ], false),
+                            }
+                        },
+                        data: incrementalConfirmation
+                    }
+                ]
+            };
+            orderTraceContainer.hideLoading();
+            orderTraceContainer.setOption(echartsOption);
+        }
+
+    function getDictKeyByValue(dict, searchValue){
+      return Object.keys(dict).find((key) => dict[key] === searchValue);
+    }
+    $(document).ready(function(){
+      $("#loading").fadeIn();
+       initProvinces();
+       fetchedDataTable("澳门");
+       fetchChartData("澳门");
+
+       $('#area-option').chosen({
+          no_results_text: '没有找到',    
+          disable_search_threshold: 4, 
+          search_contains: true         
+      });
+
+      $('#area-option').on('change', function () {
+        var province = $('#area-option').val();
+        $("#loading").fadeIn();
+        if(province !=='中国'){
+          fetchedDataTable(province);
+          fetchChartData(province);
+        }
+        else{
+          fetchedDataTable(null);
+          fetchChartData(null);
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <h5 class="my-0 mr-md-auto font-weight-normal">2019新型冠狀病毒</h5>
+    <nav class="my-2 my-md-0 mr-md-3">
+      <a class="p-2 text-dark" href="./index.html">主頁</a>
+      <a class="p-2 text-dark" href="./map.html">地圖</a>
+      <!-- <a class="p-2 text-dark" href="#">數據</a> -->
+    </nav>
+  </div>
+  <div class="container">
+      <div class='mb-2'>
+         <h5>各地區最新疫情查詢</h5>
+         <div id="search-area">
+         </div>
+      </div>
+
+      <div id="misc-data-area mt-5">
+        <h5 id="province-name" class='text-success'>疫情情況</h5>
+        <div id="misc-data">
+        </div>
+      </div>
+
+      <div id="province-detail-table-area">
+         <table id="province-table" class='table table-striped'>
+            <thead>
+              <tr>
+                <th>
+                  城市
+                </th>
+                <th>
+                  確診
+                </th>
+                <th>
+                  疑似
+                </th>
+                <th>
+                  康復
+                </th>
+                <th>
+                  死亡
+                </th>
+              </tr>
+            </thead>
+            <tbody id="province-detail-table-body">
+            </tbody>
+         </table>
+      </div>
+
+      <h3>總確診人數圖</h1>
+      <div  class="chart" id="day-trend-chart" style="height:25rem">
+      </div>
+
+      <h3>每日增加的確診人數圖</h1>
+      <div class="chart" id="incremental-chart" style="height:25rem">
+      </div>
+      <div id="loading" class="backdrop mt-5 text-center" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>    
+        <div>
+          加載中
+        </div>
+      </div>
+  </div>
+</body>
+</html>
