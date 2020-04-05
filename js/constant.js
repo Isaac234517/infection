@@ -1,5 +1,5 @@
-var endpoint ="https://lab.isaaclin.cn/nCoV/";
-var endpoint2 = "http://13.76.99.126/";
+//var endpoint ="https://lab.isaaclin.cn/nCoV/";
+var endpoint = "http://13.76.99.126/";
 var provinces = ["上海市", "云南省", "以色列", 
 "伊朗", "俄罗斯", "内蒙古自治区", "加拿大", 
 "北京市", "印度", "台湾", "吉林省", "四川省", 

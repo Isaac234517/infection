@@ -79,15 +79,14 @@
     }
 
     function fetchedDataTable(province){
-      let url = province !== null? endpoint + 'api/area?latest=1&province=' + province:
+      let url = province !== null? endpoint + 'api/area_current?latest=1&province=' + province:
           endpoint + 'api/overall?latest=1';
       $.ajax({
           url,
           method:'get',
           success: function(result){
-            if(result.success === true){
-              var dataResult = result.results;
-              var data = dataResult[0];
+            if(result.length > 0){
+              var data = result[0];
               var html = "";
               let { provinceName, confirmedCount, suspectedCount, curedCount, deadCount } = data;
               $("#misc-data").empty(); 
@@ -99,7 +98,6 @@
               html +="<span class='badge badge-danger mr-2'>死亡:" + deadCount +"</span>"; 
               $("#misc-data").append(html);
               let cities = data.cities;
-              console.log(cities);
               if(cities !== null && cities !== undefined && cities.length > 0){
                 cities.forEach((city, idx) => {
                   if(city !==null){
@@ -124,14 +122,13 @@
     }
 
     function fetchChartData(province){
-      let url = province !== null? endpoint2 + 'api/area?latest=0&province=' + province :
-          endpoint2 + 'api/overall?latest=0';
+      let url = province !== null? endpoint + 'api/area?latest=0&province=' + province :
+          endpoint + 'api/overall?latest=0';
       $.ajax({
         url: url,
         method: 'get',
         success: function(result){
           //if(result.success === true){
-            console.log(result);
             let dataResult = result;
             let trendData = [];
             let incrementalData = [];
